@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "719546362292",
+    "firebase_url": "https://recipebox-53757.firebaseio.com",
+    "project_id": "recipebox-53757",
+    "storage_bucket": "recipebox-53757.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719546362292:android:31fab70a9544430cc62ae1",
+        "android_client_info": {
+          "package_name": "me.harshi.recipebox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "719546362292-obr48ph4nr9fvc8rv27oldacd244ppgc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDev2tEnhD974IFdHQI_CVEShsrL6QQXHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "719546362292-obr48ph4nr9fvc8rv27oldacd244ppgc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

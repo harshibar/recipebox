@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>719546362292-c1cbg872294bq9bsi3r46ggaa6eu3ilr.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.719546362292-c1cbg872294bq9bsi3r46ggaa6eu3ilr</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBaDM5JE7ceubRLfsWhGMBZu6g-2NPM8wM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>719546362292</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>me.harshi.recipebox</string>
+	<key>PROJECT_ID</key>
+	<string>recipebox-53757</string>
+	<key>STORAGE_BUCKET</key>
+	<string>recipebox-53757.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:719546362292:ios:b520d55772243675c62ae1</string>
+	<key>DATABASE_URL</key>
+	<string>https://recipebox-53757.firebaseio.com</string>
+</dict>
+</plist>
