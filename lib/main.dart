@@ -6,7 +6,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:recipeBox/image_capture.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
 
 void main() async {
   runApp(MyApp());
@@ -277,7 +279,7 @@ class _ImageCaptureState extends State<ImageCapture> {
   }
 }
 
-// widget to upload image to firebase
+// widget to upload image locally
 class Uploader extends StatefulWidget {
   final File file;
 
@@ -291,18 +293,33 @@ class _UploaderState extends State<Uploader> {
       // my gcs bucket location
       FirebaseStorage(storageBucket: 'gs://recipebox-53757.appspot.com/');
 
-  StorageUploadTask _uploadTask; // create storage upload task
+  String _status; // create storage upload task
 
   /// Starts an upload task
-  void _startUpload() {  // starts immediately
-
+  Future void _startUpload() async {  // starts immediately
     /// Unique file name for the file
     /// TODO: change this to have uid with user id or something
+
+    final directory = await getApplicationDocumentsDirectory();
+
+    if (widget.file != null && directory != null) {
+        setState(() {
+          _status = 'saving in progress...';
+        });
+        GallerySaver.saveVideo(recordedVideo.path).then((String path) {
+          // STUCK HERE
+          setState(() {
+            _status = 'video saved!';
+          });
+        });
+    }
+  });
     String filePath = 'images/${DateTime.now()}.png';
+
 
     setState(() {
       // reference storage bucket and put file in it
-      _uploadTask = _storage.ref().child(filePath).putFile(widget.file);
+      _status = 'saving in progress...'
     });
   }
 
@@ -331,25 +348,6 @@ class _UploaderState extends State<Uploader> {
                 children: [
                   if (_uploadTask.isComplete)
                     Text('🎉🎉🎉'),
-
-
-                  if (_uploadTask.isPaused)
-                    FlatButton(
-                      child: Icon(Icons.play_arrow),
-                      onPressed: _uploadTask.resume,
-                    ),
-
-                  if (_uploadTask.isInProgress)
-                    FlatButton(
-                      child: Icon(Icons.pause),
-                      onPressed: _uploadTask.pause,
-                    ),
-
-                  // Progress bar
-                  LinearProgressIndicator(value: progressPercent),
-                  Text(
-                    '${(progressPercent * 100).toStringAsFixed(2)} % '
-                  ),
                 ],
               );
           });
@@ -359,8 +357,8 @@ class _UploaderState extends State<Uploader> {
 
       // Allows user to decide when to start the upload
       return FlatButton.icon(
-          label: Text('Upload to Firebase'),
-          icon: Icon(Icons.cloud_upload),
+          label: Text('Upload'),
+          icon: Icon(Icons.save),
           onPressed: _startUpload,
         );
 
