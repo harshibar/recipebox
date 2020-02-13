@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:path/path.dart';
 
 
 void main() async {
@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
         primaryColor: primaryColor,
         accentColor: Colors.yellowAccent,
         fontFamily: 'Helvetica',
+        textTheme: TextTheme(bodyText1: TextStyle(fontSize: 16.0))
       ),
       home: MyHomePage(title: appTitle, primaryColor: primaryColor),
     );
@@ -64,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Text('Drawer'),
+              child: Text('RecipeBox'),
               decoration: BoxDecoration(
                 color: widget.primaryColor,
               ),
@@ -111,7 +112,6 @@ class ImageGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('hello');
     return Scaffold(
       body: Container(
         child: makeImagesGrid(),
@@ -133,27 +133,32 @@ class ImageGridItem extends StatefulWidget {
 
 class _ImageGridItemState extends State<ImageGridItem> {
   Uint8List imageFile;
+  // retrieve all images from local storage
+  Future<List> getAllFiles() async {
+    String directory = (await getApplicationDocumentsDirectory()).path;
 
-  StorageReference photosReference = FirebaseStorage.instance.ref().child('images');
+    final Directory _imageDir = Directory('$directory/images/');
+    if(await _imageDir.exists() == false){ //if folder already exists return path
+      await _imageDir.create(recursive: true);
+    }
 
-  Future<List> getFirebaseImageFolder() {
-    final StorageReference storageRef =
-        FirebaseStorage.instance.ref().child('images');
-    return storageRef.listAll().then((result) => result['items'].keys.toList());
+    List<FileSystemEntity> listOfFiles = Directory("$directory/images").listSync();
+    return listOfFiles;
   }
 
   void getImage() async {
-    const int MAX_SIZE = 7*1024*1024; // equals 7MB
-    var items = await getFirebaseImageFolder();
-    String filename = widget._index < items.length ? items[widget._index] : 'none.png';
+    var items = await getAllFiles();
+    Uint8List fileAsBytes;
+    File file;
+    if (widget._index < items.length && items[widget._index] is File) {
+      file = items[widget._index];
+    }
 
-    // search for file by file name using index
-    photosReference.child(filename).getData(MAX_SIZE).then((data) {
-      this.setState(() {
-        imageFile = data;
-      });
-    }).catchError((error) {
+    if (file != null)
+      fileAsBytes = file.readAsBytesSync();
 
+    this.setState(() {
+      imageFile = fileAsBytes;
     });
   }
 
@@ -238,11 +243,15 @@ class _ImageCaptureState extends State<ImageCapture> {
         child: Row(
           children: <Widget>[
             IconButton( // maybe will take this off
-              icon: Icon(Icons.photo_camera),
+              icon: Icon(
+                Icons.photo_camera,
+                size: 30),
               onPressed: () => _pickImage(ImageSource.camera),
             ),
             IconButton(
-              icon: Icon(Icons.photo_library),
+              icon: Icon(
+                Icons.photo_library,
+                size: 30),
               onPressed: () => _pickImage(ImageSource.gallery),
             ),
           ],
@@ -259,11 +268,15 @@ class _ImageCaptureState extends State<ImageCapture> {
             Row(
               children: <Widget>[
                 FlatButton(
-                  child: Icon(Icons.crop),
+                  child: Icon(
+                    Icons.crop,
+                    size: 25),
                   onPressed: _cropImage,
                 ),
                 FlatButton(
-                  child: Icon(Icons.refresh),
+                  child: Icon(
+                    Icons.refresh,
+                    size: 25),
                   onPressed: _clear,
                 ),
               ],
@@ -282,83 +295,59 @@ class _ImageCaptureState extends State<ImageCapture> {
 // widget to upload image locally
 class Uploader extends StatefulWidget {
   final File file;
-
   Uploader({Key key, this.file}) : super(key: key);
-
   createState() => _UploaderState();
 }
 
 class _UploaderState extends State<Uploader> {
-  final FirebaseStorage _storage =
-      // my gcs bucket location
-      FirebaseStorage(storageBucket: 'gs://recipebox-53757.appspot.com/');
-
   String _status; // create storage upload task
 
-  /// Starts an upload task
-  Future void _startUpload() async {  // starts immediately
-    /// Unique file name for the file
-    /// TODO: change this to have uid with user id or something
-
-    final directory = await getApplicationDocumentsDirectory();
-
-    if (widget.file != null && directory != null) {
-        setState(() {
-          _status = 'saving in progress...';
-        });
-        GallerySaver.saveVideo(recordedVideo.path).then((String path) {
-          // STUCK HERE
-          setState(() {
-            _status = 'video saved!';
-          });
-        });
-    }
-  });
-    String filePath = 'images/${DateTime.now()}.png';
-
-
-    setState(() {
-      // reference storage bucket and put file in it
-      _status = 'saving in progress...'
-    });
+  @override
+  void initState() {
+    super.initState();
+    _status = null;
   }
+
+  /// Starts an upload task
+  void _startUpload() async {  // starts immediately
+
+    final Directory dir = await getApplicationDocumentsDirectory();
+    final String path = dir.path;
+    String filename = basename(widget.file.path);
+
+    if (widget.file != null && path != null) {
+      setState(() {
+        _status = 'saving in progress...';
+      });
+
+      await widget.file.copy('$path/images/$filename');
+
+      setState(() {
+        _status = '🎉 Upload Complete! 🎉';
+      });
+     }
+    }
+
 
   @override
   Widget build(BuildContext context) {
-    if (_uploadTask != null) {
-      /// exposes a stream of storageTaskEvents
-
-      /// Manage the task state and event subscription with a StreamBuilder
-      /// Listens to events listening to stream -- allows for asynchronous events?
-      /// Here, it is waiting for the upload to complete
-      return StreamBuilder<StorageTaskEvent>(
-          stream: _uploadTask.events,
-          builder: (_, snapshot) {
-            // calculate progress of upload
-            // updates every few milliseconds
-
-            var event = snapshot?.data?.snapshot;
-
-            double progressPercent = event != null
-                ? event.bytesTransferred / event.totalByteCount
-                : 0;
-
-            return Column(
-              // show different results depending on what is going on with the upload
-                children: [
-                  if (_uploadTask.isComplete)
-                    Text('🎉🎉🎉'),
-                ],
-              );
-          });
-
-
+    if (_status != null) {
+      return Column(
+        children: <Widget>[
+          Text(
+            '$_status',
+            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.5),),
+        ],
+      );
     } else {
-
       // Allows user to decide when to start the upload
       return FlatButton.icon(
-          label: Text('Upload'),
-          icon: Icon(Icons.save),
+          label: Text(
+            'Upload',
+            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.5),),
+          icon: Icon(
+            Icons.save,
+            size: 30),
           onPressed: _startUpload,
         );
 

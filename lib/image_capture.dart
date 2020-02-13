@@ -134,7 +134,6 @@ class _UploaderState extends State<Uploader> {
   void _startUpload() {  // starts immediately
 
     /// Unique file name for the file
-    /// TODO: change this to have uid with user id or something
     String filePath = 'images/${DateTime.now()}.png';
 
     setState(() {
