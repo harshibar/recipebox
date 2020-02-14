@@ -47,5 +47,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Allow on-device Firebase ML Kit API -->
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="ocr" />
+            <!-- To use multiple models: android:value="ocr,model2,model3" -->
     </application>
 </manifest>

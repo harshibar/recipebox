@@ -2,12 +2,14 @@ import 'dart:io'; // gives us access to file class
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:flappy_search_bar/flappy_search_bar.dart';
+
 
 
 void main() async {
@@ -100,6 +102,8 @@ class ImageGallery extends StatelessWidget {
   Widget makeImagesGrid() {
 
     return GridView.builder(
+      shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
       itemCount: 12,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2),
@@ -110,12 +114,26 @@ class ImageGallery extends StatelessWidget {
       });
   }
 
+  Widget makeSearchBar() {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: (SearchBar()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.height - 225);
     return Scaffold(
-      body: Container(
-        child: makeImagesGrid(),
-      ),
+      body: Column(
+          children: <Widget>[
+            new Expanded(child: Container(
+              height: MediaQuery.of(context).size.height - 225,
+              child: makeSearchBar())
+            ),
+            new Expanded(child: makeImagesGrid())
+          ]
+      )
     );
   }
 }
@@ -133,6 +151,7 @@ class ImageGridItem extends StatefulWidget {
 
 class _ImageGridItemState extends State<ImageGridItem> {
   Uint8List imageFile;
+
   // retrieve all images from local storage
   Future<List> getAllFiles() async {
     String directory = (await getApplicationDocumentsDirectory()).path;
@@ -140,6 +159,12 @@ class _ImageGridItemState extends State<ImageGridItem> {
     final Directory _imageDir = Directory('$directory/images/');
     if(await _imageDir.exists() == false){ //if folder already exists return path
       await _imageDir.create(recursive: true);
+    }
+
+    // do the same for text for now
+    final Directory _textDir = Directory('$directory/text/');
+    if(await _textDir.exists() == false){ //if folder already exists return path
+      await _textDir.create(recursive: true);
     }
 
     List<FileSystemEntity> listOfFiles = Directory("$directory/images").listSync();
@@ -301,11 +326,38 @@ class Uploader extends StatefulWidget {
 
 class _UploaderState extends State<Uploader> {
   String _status; // create storage upload task
+  String _text; // text in recipe
 
   @override
   void initState() {
     super.initState();
     _status = null;
+    _text = null;
+  }
+
+
+  /// perform optical character recognition and return all text in recipe
+  Future _performOCR() async {
+    // convert recipe image File to FireBAseVisionImage
+    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(widget.file);
+
+    // initialize textRecognizer
+    final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+    final VisionText visionText = await textRecognizer.processImage(visionImage);
+
+    // extract text
+    String text = visionText.text;
+    setState(() {
+      _text = text;
+    });
+  }
+
+  Future readTextFile(String path, String filename) async {
+    final file = File('$path/text/$filename.txt');
+
+    // Read the file.
+    String contents = await file.readAsString();
+    print(contents);
   }
 
   /// Starts an upload task
@@ -314,13 +366,17 @@ class _UploaderState extends State<Uploader> {
     final Directory dir = await getApplicationDocumentsDirectory();
     final String path = dir.path;
     String filename = basename(widget.file.path);
+    File textFile = new File('$path/text/$filename.txt');
+
+    await _performOCR();
 
     if (widget.file != null && path != null) {
       setState(() {
         _status = 'saving in progress...';
       });
-
-      await widget.file.copy('$path/images/$filename');
+      await widget.file.copy('$path/images/$filename.txt');
+      await textFile.writeAsString(_text);
+      // await readTextFile(path,filename); // as a sanity check
 
       setState(() {
         _status = '🎉 Upload Complete! 🎉';
