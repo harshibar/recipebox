@@ -160,9 +160,9 @@ packages:
   floating_search_bar:
     dependency: "direct main"
     description:
-      name: floating_search_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "floating_search_bar-0.3.0-hijacking"
+      relative: true
+    source: path
     version: "0.3.0"
   flutter:
     dependency: "direct main"

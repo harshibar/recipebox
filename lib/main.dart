@@ -140,15 +140,19 @@ class ImageGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height / 5);
     return Scaffold(
-      body: Column(
-          children: <Widget>[
-            new Expanded(child: Container(
-              child: makeSearchBar())
-            ),
-            new Expanded(child: makeImagesGrid())
-          ]
+      body: FloatingSearchBar.builder(
+        itemCount: 100,
+        itemBuilder: (BuildContext context, int index) {
+          return new Padding (
+            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+            child: Card(
+              child: ImageGridItem(index),
+            )
+          );
+        },
+        onChanged: (String value) {},
+        onTap: () {},
       )
     );
   }
