@@ -45,6 +45,7 @@ dependencies:
   firebase_ml_vision: 0.9.3+5
 
   flappy_search_bar: ^1.7.2
+  floating_search_bar: ^0.3.0
 
 
   image_cropper: 1.2.1
