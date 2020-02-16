@@ -8,7 +8,6 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:floating_search_bar/floating_search_bar.dart';
 
 
@@ -100,43 +99,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
 /* Displays an aethetic grid of images from Firebase */
 class ImageGallery extends StatelessWidget {
-  Widget makeImagesGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
-      itemCount: 12,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2),
-      itemBuilder: (BuildContext context, int index) {
-        return new Card(
-          child: ImageGridItem(index),
-        );
-      });
-  }
+  // Widget makeImagesGrid() {
+  //   return GridView.builder(
+  //     shrinkWrap: true,
+  //     physics: ClampingScrollPhysics(),
+  //     itemCount: 12,
+  //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //       crossAxisCount: 2),
+  //     itemBuilder: (BuildContext context, int index) {
+  //       return new Card(
+  //         child: ImageGridItem(index),
+  //       );
+  //     });
+  // }
 
-  Widget makeSearchBar() {
-    return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: (
-          FloatingSearchBar.builder(
-            itemCount: 100,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                leading: Text(index.toString()),
-              );
-            },
-            drawer: Drawer(
-              child: Container(),
-            ),
-            onChanged: (String value) {},
-            onTap: () {},
-            decoration: InputDecoration.collapsed(
-              hintText: "Search...",
-            )
-          )
-        )
-    );
-  }
+  // Widget makeSearchBar() {
+  //   return Padding(
+  //       padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+  //       child: (
+  //         FloatingSearchBar.builder(
+  //           itemCount: 100,
+  //           itemBuilder: (BuildContext context, int index) {
+  //             return ListTile(
+  //               leading: Text(index.toString()),
+  //             );
+  //           },
+  //           drawer: Drawer(
+  //             child: Container(),
+  //           ),
+  //           onChanged: (String value) {},
+  //           onTap: () {},
+  //           decoration: InputDecoration.collapsed(
+  //             hintText: "Search...",
+  //           )
+  //         )
+  //       )
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -144,11 +143,9 @@ class ImageGallery extends StatelessWidget {
       body: FloatingSearchBar.builder(
         itemCount: 100,
         itemBuilder: (BuildContext context, int index) {
-          return new Padding (
-            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-            child: Card(
+          return new Card(
               child: ImageGridItem(index),
-            )
+              margin: EdgeInsets.fromLTRB(4, 4, 4, 4)
           );
         },
         onChanged: (String value) {},

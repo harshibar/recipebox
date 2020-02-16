@@ -70,7 +70,7 @@ class FloatingSearchBar extends StatelessWidget {
         headerSliverBuilder: (context, enabled) {
           return [
             SliverPadding(
-              padding: padding,
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
               sliver: SliverFloatingBar(
                 leading: leading,
                 floating: !pinned,
@@ -91,11 +91,14 @@ class FloatingSearchBar extends StatelessWidget {
             ),
           ];
         },
-        body: GridView.custom(
-          childrenDelegate: _childDelagate,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2),
-          ),
+        body: Padding(
+          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+          child: GridView.custom(
+            childrenDelegate: _childDelagate,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2),
+            ),
+        )
       ),
     );
   }
