@@ -11,7 +11,6 @@ import 'package:path/path.dart';
 import 'package:floating_search_bar/floating_search_bar.dart';
 
 
-
 void main() async {
   runApp(MyApp());
 }
@@ -392,6 +391,7 @@ class _UploaderState extends State<Uploader> {
         _status = 'saving in progress...';
       });
       await widget.file.copy('$path/images/$filename.txt');
+
       await textFile.writeAsString(_text);
       // await readTextFile(path,filename); // as a sanity check
 
