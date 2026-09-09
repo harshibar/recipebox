@@ -1,0 +1,25 @@
+{
+  "name": "recipeBox",
+  "short_name": "recipeBox",
+  "description": "Store messy recipes, get real macros.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf9f4",
+  "theme_color": "#c2410c",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "share_target": {
+    "action": "/api/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        { "name": "images", "accept": ["image/*"] }
+      ]
+    }
+  }
+}
