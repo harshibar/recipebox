@@ -1,0 +1,12 @@
+{
+  "name": "sous",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Capture voice notes and photos while you cook, timestamped against the recipe, synced to Obsidian or Notion.",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": { "node": ">=20" }
+}
