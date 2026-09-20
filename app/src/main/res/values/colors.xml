@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Placeholder launcher background; revisit alongside app theming/branding. -->
+    <color name="ic_launcher_background">#FFB74D</color>
+</resources>

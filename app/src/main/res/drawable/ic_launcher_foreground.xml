@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Placeholder mark: a simple open book. Real icon pending design pass. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,32 C48,27 36,24 27,24 v46 c9,0 21,3 27,8 c6,-5 18,-8 27,-8 V24 C72,24 60,27 54,32 Z" />
+    <path
+        android:fillColor="#00000022"
+        android:pathData="M54,32 L54,80 C60,75 72,72 81,72 V24 C72,24 60,27 54,32 Z" />
+</vector>
