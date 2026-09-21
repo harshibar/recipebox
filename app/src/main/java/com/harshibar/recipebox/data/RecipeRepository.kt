@@ -8,18 +8,12 @@ class RecipeRepository(private val database: AppDatabase) {
 
     private val dao = database.recipeDao()
 
-    fun observeRecipes(): Flow<List<Recipe>> = dao.observeRecipes()
+    fun observeRecipeSummaries(): Flow<List<RecipeSummary>> = dao.observeRecipeSummaries()
 
-    fun searchRecipes(query: String): Flow<List<Recipe>> =
-        if (query.isBlank()) dao.observeRecipes() else dao.searchRecipes(query)
-
-    suspend fun getAllTitles(): List<String> = dao.getAllTitles()
+    suspend fun getAllTitleSummaries(): List<TitleSummary> = dao.getAllTitleSummaries()
 
     fun observeRecipeWithDetails(recipeId: Long): Flow<RecipeWithDetails?> =
         dao.observeRecipeWithDetails(recipeId)
-
-    fun observeCookLogs(recipeId: Long): Flow<List<CookLog>> =
-        dao.observeCookLogsForRecipe(recipeId)
 
     /** Quick Capture: a title + an optional photo becomes a one-step recipe, logged as cooked today. */
     suspend fun createQuickCapture(title: String, photoPath: String?): Long =
@@ -84,12 +78,19 @@ class RecipeRepository(private val database: AppDatabase) {
 
     suspend fun deleteNote(note: RecipeNote) = dao.deleteNote(note)
 
-    suspend fun logCookedToday(recipeId: Long) =
-        dao.insertCookLog(
-            CookLog(
-                recipeId = recipeId,
-                cookedOnEpochDay = LocalDate.now().toEpochDay(),
-                createdAt = System.currentTimeMillis()
+    /** Re-cooking an existing recipe: log today, and append a new photo step if one was taken. */
+    suspend fun logExistingRecipeCook(recipeId: Long, photoPath: String?): Unit =
+        database.withTransaction {
+            val now = System.currentTimeMillis()
+            if (photoPath != null) {
+                val nextOrder = dao.countSteps(recipeId)
+                dao.insertStep(
+                    RecipeStep(recipeId = recipeId, orderIndex = nextOrder, instructionText = "", photoPath = photoPath)
+                )
+            }
+            dao.insertCookLog(
+                CookLog(recipeId = recipeId, cookedOnEpochDay = LocalDate.now().toEpochDay(), createdAt = now)
             )
-        )
+            dao.touchUpdatedAt(recipeId, now)
+        }
 }
